@@ -1,0 +1,8 @@
+customer_id,name,income,credit_score,target
+1,Ali,50000,720,1
+2,Sara,62000,680,0
+3,Hossein,45000,750,1
+4,Nima,55000,690,0
+5,Reza,48000,710,1
+6,Mina,60000,670,0
+
