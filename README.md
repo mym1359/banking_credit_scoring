@@ -1,10 +1,10 @@
-# 🏦 Banking Credit Scoring Project
+🏦 Banking Credit Scoring Project
 
 A machine learning project designed to assess the creditworthiness of bank customers based on financial and behavioral data. The goal is to predict credit risk and support decision-making in loan approvals.
 
 ---
 
-## 📊 Features
+ 📊 Features
 
 - Data ingestion and preprocessing
 - Feature engineering for model optimization
@@ -14,7 +14,7 @@ A machine learning project designed to assess the creditworthiness of bank custo
 
 ---
 
-## 🧠 Algorithms Used
+ 🧠 Algorithms Used
 
 - Logistic Regression
 - Decision Tree
@@ -29,7 +29,7 @@ A machine learning project designed to assess the creditworthiness of bank custo
 
 ---
 
-## 📦 Installation & Usage
+ 📦 Installation & Usage
 
 ```bash
 # Create virtual environment
@@ -56,7 +56,7 @@ The dataset includes customer demographics, credit history, income, debt levels,
 
 👨‍💻 Developer
 - GitHub: mym1359
-- Email: your-email@example.com
+- Email: mym1359@gmail.com
 
 🚀 Future Plans
 - Integrate with live banking APIs
@@ -85,13 +85,30 @@ This project is licensed under the MIT License. Feel free to use and modify with
 ---
 
 Let me know if you'd like this translated into a downloadable file, or if you want to add badges, visualizations, or links to notebooks and datasets. I can also help you write a `CHANGELOG.md` or `CONTRIBUTING.md` next.
-
-
-
-
-
-
-
 ---
 
-## 🧪 Project Structure
+ 🧪 Project Structure
+banking_credit_scoring/ ├── preprocessing.py ├── feature_engineering.py ├── model_training.py ├── api.py ├── Dockerfile ├── docker-compose.yml ├── requirements.txt ├── README.md ├── README.fa.md ├── CHANGELOG.md ├── CONTRIBUTING.md ├── LICENSE ├── models/ ├── logs/ └── data/
+
+🐳 Docker Deploymen
+# Build and run with Docker Compose
+docker-compose up --build
+
+🔌 API Endpoint
+POST /predict
+Request Body:{
+  "income": 50000,
+  "credit_score": 680,
+  "debt": 12000,
+  "age": 35,
+  "employment_years": 7
+}
+
+Response:
+{
+  "risk_class": 1,
+  "risk_probability": 0.8421
+}
+
+
+
