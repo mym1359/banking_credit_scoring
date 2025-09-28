@@ -1,29 +1,33 @@
 name: Daily Commit
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'  # اجرای روزانه ساعت ۶ صبح UTC
-  workflow_dispatch:     # امکان اجرای دستی از تب Actions
+    - cron: '0 9 * * *'  # هر روز ساعت ۹ صبح UTC
 
 jobs:
   commit:
     runs-on: ubuntu-latest
 
     steps:
-      - name: دریافت کدهای مخزن
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: تنظیم اطلاعات Git
+      - name: Set up Git
         run: |
-          git config user.name "mym1359"
-          git config user.email "mym1359@gmail.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: ایجاد تغییر ساده
+      - name: Update daily file
         run: |
-          echo "آخرین بروزرسانی: $(date)" > daily_update.txt
+          echo "Last updated: $(date -u)" > daily.txt
 
-      - name: Commit و Push
+      - name: Commit changes
         run: |
-          git add daily_update.txt
-          git commit -m "فعالیت روزانه: $(date)"
-          git push
+          git add daily.txt
+          git commit -m "Daily commit: $(date -u)" || echo "No changes to commit"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
