@@ -3,7 +3,7 @@ name: Daily Commit
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 9 * * *'  # هر روز ساعت ۹ صبح UTC
+    - cron: '0 9 * * *'
 
 jobs:
   commit:
@@ -13,12 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PERSONAL_TOKEN }}
 
       - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "mym1359"
+          git config --global user.email "your-email@example.com"
 
       - name: Create or update daily.txt
         run: |
@@ -30,6 +30,5 @@ jobs:
           git commit -m "Daily commit: $(date -u)" || echo "No changes to commit"
 
       - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push origin HEAD
