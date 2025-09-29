@@ -24,7 +24,9 @@ jobs:
           pip install pytest flake8 bandit
 
       - name: Run tests
-        run: pytest
+        run: |
+          export PYTHONPATH="${{ github.workspace }}"
+          pytest
 
       - name: Run linting
         run: flake8 . --max-line-length=120
