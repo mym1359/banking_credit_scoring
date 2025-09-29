@@ -88,7 +88,7 @@ Response:
 
 👨‍💻 Developer
 - GitHub: mym1359
-- Email: your-email@example.com
+- Email: mym1359@gmail.com
 - Location: Iran (Global Talent Applicant)
 
 📜 License
