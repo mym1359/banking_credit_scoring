@@ -1,34 +1,50 @@
-name: Daily Commit
+name: Daily Commit & Code Check
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '0 9 * * *'  # هر روز ساعت ۹ صبح UTC
 
 jobs:
-  commit:
+  daily:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          token: ${{ secrets.PERSONAL_TOKEN }}
+          python-version: '3.11'
 
-      - name: Configure Git
+      - name: Install dependencies
         run: |
-          git config --global user.name "mym1359"
-          git config --global user.email "mym1359@gmail.com"
+          pip install -r requirements.txt
+          pip install pytest flake8 bandit
 
-      - name: Create or update daily.txt
-        run: |
-          echo "Last updated: $(date -u)" > daily.txt
+      - name: Run tests
+        run: pytest
+
+      - name: Run linting
+        run: flake8 . --max-line-length=120
+
+      - name: Run security scan
+        run: bandit -r . -lll
+
+      - name: Update daily file
+        run: echo "Last updated: $(date -u)" > daily.txt
 
       - name: Commit changes
         run: |
+          git config --global user.name "mym1359"
+          git config --global user.email "mym1359@gmail.com"
           git add daily.txt
           git commit -m "Daily commit: $(date -u)" || echo "No changes to commit"
 
       - name: Push changes
+        env:
+          TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
-          git push origin HEAD
+          git remote set-url origin https://mym1359:${TOKEN}@github.com/mym1359/banking_credit_scoring.git
+          git push origin HEAD:main
