@@ -28,6 +28,11 @@ jobs:
           export PYTHONPATH="${{ github.workspace }}"
           pytest || echo "Tests failed"
 
+      - name: Auto-fix code style
+        run: |
+          pip install black autopep8
+          python fix_style.py
+
       - name: Run linting
         run: flake8 . --max-line-length=120
 
