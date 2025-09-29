@@ -33,12 +33,16 @@ jobs:
         run: bandit -r . -lll
 
       - name: Update daily file
-        run: echo "Last updated: $(date -u)" > daily.txt
+        run: |
+              echo "Last updated: $(date -u)" > daily.txt
 
-      - name: Commit changes
+      - name: Configure Git
         run: |
           git config --global user.name "mym1359"
           git config --global user.email "mym1359@gmail.com"
+
+      - name: Commit changes
+        run: |
           git add daily.txt
           git commit -m "Daily commit: $(date -u)" || echo "No changes to commit"
 
