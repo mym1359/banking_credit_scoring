@@ -31,7 +31,7 @@ jobs:
       - name: Auto-fix code style
         run: |
           pip install black autopep8
-          python fix_style.py
+          python fix_style_advanced.py
 
       - name: Run linting
         run: flake8 . --max-line-length=120
