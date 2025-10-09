@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  credit_model:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: credit_scoring_container
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: uvicorn api:app --host 0.0.0.0 --port 8000

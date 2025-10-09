@@ -1,75 +1,51 @@
-# app/preprocessing.py
+# preprocessing.py
 
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import StandardScaler
+from pydantic import BaseModel, ValidationError
+import logging
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Removes missing values and duplicate rows from the DataFrame.
+# Setup logging
+logging.basicConfig(filename='logs/preprocessing.log', level=logging.INFO)
 
-    Parameters:
-        df (pd.DataFrame): Raw input data.
+# Input schema validation
 
-    Returns:
-        pd.DataFrame: Cleaned data.
-    """
-    initial_rows = len(df)
-    df = df.dropna()
-    df = df.drop_duplicates()
-    final_rows = len(df)
-    print(f"[INFO] Cleaned data: {initial_rows} → {final_rows} rows")
-    return df
+class CustomerRecord(BaseModel):
+    age: int
+    income: float
+    credit_score: float
+    debt: float
+    employment_years: int
 
-
-def normalize_features(df: pd.DataFrame, feature_cols: list) -> pd.DataFrame:
-    """
-    Normalizes selected numerical features using StandardScaler.
-
-    Parameters:
-        df (pd.DataFrame): Input DataFrame.
-        feature_cols (list): List of column names to normalize.
-
-    Returns:
-        pd.DataFrame: DataFrame with normalized features.
-
-    Raises:
-        ValueError: If any of the specified columns are missing.
-    """
-    missing = [col for col in feature_cols if col not in df.columns]
-    if missing:
-        raise ValueError(f"[ERROR] Missing columns for normalization: {missing}")
-
-    scaler = StandardScaler()
-    df[feature_cols] = scaler.fit_transform(df[feature_cols])
-    print(f"[INFO] Normalized features: {feature_cols}")
-    return df
-
-
-def standardize_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Strips whitespace and converts column names to lowercase.
-
-    Parameters:
-        df (pd.DataFrame): Input DataFrame.
-
-    Returns:
-        pd.DataFrame: DataFrame with standardized column names.
-    """
-    df.columns = df.columns.str.strip().str.lower()
-    print("[INFO] Standardized column names")
-    return df
-
-
-if __name__ == "__main__":
-    from app.data_ingestion import load_data_from_csv
-
-    df = load_data_from_csv("data/sample.csv")
-    df = standardize_column_names(df)
-    df_clean = clean_data(df)
-
+def validate_row(row):
     try:
-        df_norm = normalize_features(df_clean, ["income", "credit_score"])
-        print("[SUCCESS] Normalized Data:")
-        print(df_norm.head())
-    except ValueError as e:
-        print(e)
+        CustomerRecord(**row)
+        return True
+    except ValidationError as e:
+        logging.warning(f"Invalid row: {row} | Error: {e}")
+        return False
+
+def preprocess(df: pd.DataFrame) -> pd.DataFrame:
+    logging.info("Starting preprocessing...")
+
+    # Drop duplicates
+    df = df.drop_duplicates()
+    logging.info(f"Removed duplicates. Remaining rows: {len(df)}")
+
+    # Validate rows
+    df = df[df.apply(validate_row, axis=1)]
+    logging.info(f"Validated rows. Remaining rows: {len(df)}")
+
+    # Handle missing values
+    df = df.fillna(df.median(numeric_only=True))
+    logging.info("Filled missing values with median.")
+
+    # Feature scaling
+    scaler = StandardScaler()
+    numeric_cols = ['income', 'credit_score', 'debt']
+    df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+    logging.info("Scaled numeric features.")
+
+    logging.info("Preprocessing completed.")
+    return df
