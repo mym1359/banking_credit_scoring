@@ -35,13 +35,16 @@ jobs:
           pytest || echo "⚠️ Tests failed"
 
       - name: Run linting
-        run: flake8 . --max-line-length=120 || echo "⚠️ Lint failed"
+        run: |
+          flake8 . --max-line-length=120 || echo "⚠️ Lint failed"
 
       - name: Run security scan
-        run: bandit -r . -lll || echo "⚠️ Security scan failed"
+        run: |
+          bandit -r . -lll || echo "⚠️ Security scan failed"
 
       - name: Update daily file
-        run: echo "Last updated: $(date -u)" > daily.txt
+        run: |
+          echo "Last updated: $(date -u)" > daily.txt
 
       - name: Configure Git
         run: |
