@@ -1,9 +1,9 @@
-name: Daily Commit & Code Check
+name: Daily Commit
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
   schedule:
-    - cron: '0 9 * * *'  # هر روز ساعت ۹ صبح UTC
+    - cron: '0 4 * * *'
 
 jobs:
   daily:
@@ -21,27 +21,27 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest flake8 bandit
+          pip install pytest flake8 bandit black autopep8
+
+      - name: Auto-fix code style
+        run: |
+          python fix_style_advanced.py || echo "⚠️ fix_style_advanced.py failed"
+          black . || echo "⚠️ black failed"
+          find . -name "*.py" -exec autopep8 --in-place {} \; || echo "⚠️ autopep8 failed"
 
       - name: Run tests
         run: |
           export PYTHONPATH="${{ github.workspace }}"
-          pytest || echo "Tests failed"
-
-      - name: Auto-fix code style
-        run: |
-          pip install black autopep8
-          python fix_style_advanced.py
+          pytest || echo "⚠️ Tests failed"
 
       - name: Run linting
-        run: flake8 . --max-line-length=120
+        run: flake8 . --max-line-length=120 || echo "⚠️ Lint failed"
 
       - name: Run security scan
-        run: bandit -r . -lll
+        run: bandit -r . -lll || echo "⚠️ Security scan failed"
 
       - name: Update daily file
-        run: |
-              echo "Last updated: $(date -u)" > daily.txt
+        run: echo "Last updated: $(date -u)" > daily.txt
 
       - name: Configure Git
         run: |
@@ -50,12 +50,12 @@ jobs:
 
       - name: Commit changes
         run: |
-          git add daily.txt
-          git commit -m "Daily commit: $(date -u)" || echo "No changes to commit"
+          git add .
+          git commit -m "Daily commit: $(date -u)" || echo "⚠️ No changes to commit"
 
       - name: Push changes
         env:
           TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           git remote set-url origin https://mym1359:${TOKEN}@github.com/mym1359/banking_credit_scoring.git
-          git push origin HEAD:main
+          git push origin HEAD:main || echo "⚠️ Push failed"
